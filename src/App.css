@@ -1,0 +1,11 @@
+*{
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0px;
+    padding: 0px;
+}
+ul{
+    list-style: none;
+}
+.todo{
+    background-color: rgb(97, 137, 189);
+}
