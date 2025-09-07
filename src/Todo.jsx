@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import {addTodoAPI, deleteAPI, editTodoAPI, getTodoAPI} from './services/allAPI'
+import { SiPanasonic } from 'react-icons/si';
 
 const style = {
 position: 'absolute',
@@ -23,14 +24,28 @@ p: 4,
 }; 
 
 function Todo() {
-    const [todo,setTodo]=React.useState({title:"",description:"",date:"",priority:"",completed:'false'})
+    const [todo,setTodo]=React.useState({title:"",description:"",date:"",priority:"",completed:false})
     const [allTodos,setAllTodos]=React.useState([])
     const [open, setOpen] = React.useState(false);
     const [edit,setEdit]=React.useState(false)
     const [editId,setEditId]=React.useState("")
+    const [completed,setCompleted]=React.useState(false)
+    const [selectedTodo,setSelectedTodo]=React.useState(null)
 
-  const handleOpen = () =>setOpen(true); 
-  const handleClose = () => setOpen(false);
+
+const handleOpen = (id) => {
+  const selectedTodo = allTodos.find((item) => item.id === id);
+  setSelectedTodo(selectedTodo);
+  setOpen(true) 
+  console.log(selectedTodo);
+  
+};
+
+
+  const handleClose = () => {
+      setOpen(false);
+      setSelectedTodo(null)
+  }
   
   React.useEffect(()=>{
   getTodo()
@@ -72,7 +87,7 @@ const result=await getTodoAPI()
       await addTodoAPI(todo)
       setAllTodos([...allTodos,todo])     
       setTodo({title:"",description:"",date:"",priority:""})
-      console.log(todo.completed);
+      
       
     }
     else{
@@ -103,6 +118,22 @@ try{
 }
 }
  
+const toggleComplete = async (id, checked) => {
+  // Update local state
+  const updatedTodos = allTodos.map((item) =>
+    item.id === id ? { ...item, completed: checked } : item
+  );
+  setAllTodos(updatedTodos);
+
+  // Update server with full updated todo
+  const updatedTodo = updatedTodos.find((t) => t.id === id);
+  try {
+    await editTodoAPI(updatedTodo, id);
+  } catch (err) {
+    console.log(err);
+  }
+};
+  
 
   return (
     <div className='todo py-5 vh-100'>
@@ -147,41 +178,19 @@ try{
                      
                                 <div className="d-flex mt-2">
                                     <div key={id} className="d-flex flex-row w-100 border rounded justify-content-between p-2 align-items-center bg-light mb-2">
-                                        <li className='fs-5'><input type="checkbox"  className='mx-2 '/>{item.title}</li>
+                                        <li className='fs-5'><input type="checkbox" checked={item.completed || false} onChange={(e)=>toggleComplete(item.id,e.target.checked)} className='mx-2 '/><span style={{ textDecoration: item.completed ? "line-through" : "none" }}>
+  {item.title}
+</span></li>
                                        
                                         <div className="">
-                                            <Button className='text-dark fs-4' onClick={handleOpen}><FaEye /></Button>
+                                            <Button className='text-dark fs-4' onClick={()=>handleOpen(item.id)}><FaEye /></Button>
                                             <Button className=' fs-4' onClick={()=>handleEdit(item,item.id)}><FaEdit/></Button>
                                             <Button onClick={()=>{handleDelete(item.id)}} className='text-danger fs-4'>
                                              <MdDelete />
                                             </Button>
                                          
                                             
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            {item.title}
-          </Typography>
-
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          {item.description}     
-          </Typography>
-           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-           Due Date : {item.date}     
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          Priority : {item.priority}        
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          Status : <span className='text-success'>In-Progress</span>       
-          </Typography>
-        </Box>
-      </Modal>
+     
 
                                         </div>
                                         
@@ -193,6 +202,41 @@ try{
                             </ul>
             </div>
           </div>
+
+
+             <div className="">
+
+{
+    
+    open && (
+    <Modal
+  open={open}
+  onClose={handleClose}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Box sx={style}>
+    <Typography id="modal-modal-title" variant="h5"  component="h6">
+      <span className='text-primary'>{selectedTodo.title}</span>
+    </Typography>
+    <Typography id="modal-modal-description"  variant="p" sx={{ mt: 2 }}>
+      {selectedTodo.description}
+    </Typography>
+    <Typography id="modal-modal-description" variant="h6" sx={{ mt: 2 }}>
+     Due date : {selectedTodo.date}
+    </Typography>
+    <Typography id="modal-modal-description" variant="h6" sx={{ mt: 2 }}>
+     Priority : {selectedTodo.priority}
+    </Typography>
+    <Typography id="modal-modal-description" variant="h6" sx={{ mt: 2 }}>
+     Status : {selectedTodo.completed? <span className='text-warning'>Completed</span> : <span className='text-success'>In-progress</span> }
+    </Typography>
+  </Box>
+</Modal>
+    )
+    
+}
+            </div>
         </div>
     </div>
   )
