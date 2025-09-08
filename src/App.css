@@ -7,5 +7,32 @@ ul{
     list-style: none;
 }
 .todo{
-    background-color: rgb(97, 137, 189);
+    background-color: #afc2d4;
+}
+button{
+   border: none;
+   background-color: white;
+    
+}
+.icons button:hover{
+   scale: 110%;
+   
+}
+.icons button{
+    width: 100px;
+    background-color:rgb(45, 75, 139) ;
+}
+.title{
+    color: #1E3A8A;
+}
+.tagline,.tasks{
+    color: #0e4b44;
+    font-style: italic;
+}
+.add_btn{
+    background-color: rgb(45, 75, 139);
+    color: white;
+}
+.add_btn:hover{
+    background-color:#afc2d4 ;
 }
