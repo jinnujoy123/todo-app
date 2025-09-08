@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const BASEURL = "http://localhost:3000/"
+const BASEURL = "https://todo-server-cxjt.onrender.com/"
 
 const commonAPI =async (httpMethod,url,reqBody)=>{
    

@@ -81,14 +81,16 @@ function Todo() {
       setEditId(null);
       setEdit(false);
       setTodo({ title: "", description: "", date: "", priority: "" });
+      swal("Success!", "Task updated successfully", "success");
     } else {
       try {
         if (todo.title && todo.date && todo.priority) {
           await addTodoAPI(todo);
           setAllTodos([...allTodos, todo]);
           setTodo({ title: "", description: "", date: "", priority: "" });
+          swal("Success!", "Task added", "success");
         } else {
-          alert("Please fill all the details");
+          swal("Sorry!!!", "Please fill the required fields!!!", "success");
         }
       } catch (err) {
         console.log(err);
